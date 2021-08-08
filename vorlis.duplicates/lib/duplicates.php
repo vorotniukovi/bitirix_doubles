@@ -4,6 +4,7 @@ use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\Loader;
 use Bitrix\Iblock\IblockTable;
 use Bitrix\Iblock\TypeTable;
+use Bitrix\Iblock\PropertyTable;
 /**
  * Class Duplicates for api
  */
@@ -51,10 +52,9 @@ class Duplicates {
     }
     /**
      * GetProps method, get all PROPS values
-     *
      */
     public function GetProps($iblock_id){
-        $propertyList = \Bitrix\Iblock\PropertyTable::getList(array(
+        $propertyList = PropertyTable::getList(array(
             "select" => array("NAME","CODE","ID"),
             "filter" => array("=IBLOCK_ID" => $iblock_id, "MULTIPLE"=>'N',"ACTIVE"=>"Y")));
         while ($row = $propertyList->fetch()) {
