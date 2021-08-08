@@ -2,7 +2,8 @@
 namespace Vorlis\Duplicates;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\Loader;
-
+use Bitrix\Iblock\IblockTable;
+use Bitrix\Iblock\TypeTable;
 /**
  * Class Duplicates for api
  */
@@ -14,9 +15,9 @@ class Duplicates {
     /**
      * GetIblocks private method, get all IBLOCKS names
      * @var string
-     */     
+     */
     private function GetIblocks($type){
-        $result = \Bitrix\Iblock\IblockTable::getList( [
+        $result = IblockTable::getList( [
             'select' => ['ID', 'NAME'],
             'filter' => ['IBLOCK_TYPE_ID' => $type],
         ] );
@@ -29,12 +30,12 @@ class Duplicates {
      * GetIblockType public method, get all type iblocks
      */
     public function GetIblockType(){
-        $iblockTypes = \Bitrix\Iblock\TypeTable::getList(array(
-                'select' => array('*', 'NAME' => 'LANG_MESSAGE.NAME'), 
-                'filter' => array('=LANG_MESSAGE.LANGUAGE_ID' => 'ru')
-            ))->FetchAll();
+        $iblockTypes = TypeTable::getList(array(
+            'select' => array('*', 'NAME' => 'LANG_MESSAGE.NAME'),
+            'filter' => array('=LANG_MESSAGE.LANGUAGE_ID' => 'ru')
+        ))->FetchAll();
         foreach($iblockTypes as $typeinfo){
-            $types[$typeinfo['ID']] = $this->GetIblocks($typeinfo['ID']);  
+            $types[$typeinfo['ID']] = $this->GetIblocks($typeinfo['ID']);
         }
         return $types ? $types : 0;
     }
@@ -42,7 +43,7 @@ class Duplicates {
      * GetOneType public method
      */
     public function GetOneType($id){
-        $iblockOneType = \Bitrix\Iblock\IblockTable::getList( [
+        $iblockOneType = IblockTable::getList( [
             'select' => ['ID', 'NAME', 'IBLOCK_TYPE_ID'],
             'filter' => ['ID'=> $id],
         ] )->FetchAll();
@@ -50,37 +51,39 @@ class Duplicates {
     }
     /**
      * GetProps method, get all PROPS values
-     * @todo: this  methods need to be rewritten on D7 on new update Let"s Start
      *
      */
     public function GetProps($iblock_id){
-        $properties = \CIBlockProperty::GetList(Array("sort"=>"asc",'cnt'=>'asc'), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$iblock_id,"MULTIPLE"=>'N', "PROPERTY_TYPE" => "S"));
-            while ($prop_fields = $properties->GetNext()){
-                $json["PROPERTY_".$prop_fields["ID"]] = $prop_fields["CODE"]." ".$prop_fields["NAME"]." [".$prop_fields["ID"]."]";
-            }
-            return $json ? $json : 0;
+        $propertyList = \Bitrix\Iblock\PropertyTable::getList(array(
+            "select" => array("NAME","CODE","ID"),
+            "filter" => array("=IBLOCK_ID" => $iblock_id, "MULTIPLE"=>'N',"ACTIVE"=>"Y")));
+        while ($row = $propertyList->fetch()) {
+            $json["PROPERTY_".$row["ID"]] = $row["CODE"]." ".$row["NAME"]." [".$row["ID"]."]";
+        }
+        return $json ? $json : 0;
     }
     /**
      * GetMainGroup public method
+     *  @todo: this  methods need to be rewritten on D7 on new update Let"s Start
      */
     public function GetMainGroup($sort,$arFilter,$GROUP,$nav_params){
-            $rsData = \CIBlockElement::GetList($sort, $arFilter, array($GROUP), $nav_params);    
-            return $rsData ? $rsData : 0;
+        $rsData = \CIBlockElement::GetList($sort, $arFilter, array($GROUP), $nav_params);
+        return $rsData ? $rsData : 0;
     }
     public function GetIdbyName($IBLOCK_ID,$FIELD_NAME,$name){
-    if($name == 'Empty'){
-        $name = false;
-    }
+        if($name == 'Empty'){
+            $name = false;
+        }
         $arFilter = Array("IBLOCK_ID"=>IntVal($IBLOCK_ID),$FIELD_NAME=>$name);
         $arSelect = Array("ID", "IBLOCK_ID","NAME","PROPERTY_*");
-    
+
         $res = \CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
-            if($ob = $res->GetNextElement()){ 
-                $arFields = $ob->GetFields();
-               
-                $odj = $arFields["ID"];
-            }
-            return $odj ? $odj : 0;
+        if($ob = $res->GetNextElement()){
+            $arFields = $ob->GetFields();
+
+            $odj = $arFields["ID"];
+        }
+        return $odj ? $odj : 0;
     }
     public function GetIdbyPropName($IBLOCK_ID,$PROP_ATT,$VALUE){
         if($VALUE == 'Empty'){
@@ -88,21 +91,21 @@ class Duplicates {
         }
         $arFilter = Array("IBLOCK_ID"=>IntVal($IBLOCK_ID),"PROPERTY_".$PROP_ATT=>$VALUE);
         $arSelect = Array("ID", "IBLOCK_ID","NAME","PROPERTY_*");
-    
+
         $res = \CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
-            if($ob = $res->GetNextElement()){ 
-                $arFields = $ob->GetFields();
-               
-                $odj = $arFields["ID"];
-            }
-            return $odj ? $odj : 0;
+        if($ob = $res->GetNextElement()){
+            $arFields = $ob->GetFields();
+
+            $odj = $arFields["ID"];
+        }
+        return $odj ? $odj : 0;
     }
     public function GetPropsName($iblock_id,$code){
         $properties = \CIBlockProperty::GetList(Array("sort"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$iblock_id,"MULTIPLE"=>'N', "CODE" => $code));
-            if($prop_fields = $properties->GetNext()){
-                $json =  $prop_fields["NAME"];
-            }
-            return $json ? $json : 0;
+        if($prop_fields = $properties->GetNext()){
+            $json =  $prop_fields["NAME"];
+        }
+        return $json ? $json : 0;
     }
     public function GetName($code){
         $mainfields = [
@@ -119,12 +122,11 @@ class Duplicates {
     }
     public function AllData($sort,$arFilter,$GROUP,$nav_params){
 
-            $rsData = \CIBlockElement::GetList($sort, $arFilter, array($GROUP), $nav_params);    
-            while($item = $rsData->Fetch()){ 
-                $data[] = $item;
-            }
+        $rsData = \CIBlockElement::GetList($sort, $arFilter, array($GROUP), $nav_params);
+        while($item = $rsData->Fetch()){
+            $data[] = $item;
+        }
 
-            return $data ? $data : 0;
+        return $data ? $data : 0;
     }
-       
 }
