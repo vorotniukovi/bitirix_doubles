@@ -50,7 +50,8 @@ class Duplicates {
     }
     /**
      * GetProps method, get all PROPS values
-     * @todo: this  methods need to be rewritten on D7 on new update
+     * @todo: this  methods need to be rewritten on D7 on new update Let"s Start
+     *
      */
     public function GetProps($iblock_id){
         $properties = \CIBlockProperty::GetList(Array("sort"=>"asc",'cnt'=>'asc'), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$iblock_id,"MULTIPLE"=>'N', "PROPERTY_TYPE" => "S"));
