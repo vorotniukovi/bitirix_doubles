@@ -36,7 +36,12 @@ class Duplicates {
             'filter' => array('=LANG_MESSAGE.LANGUAGE_ID' => 'ru')
         ))->FetchAll();
         foreach($iblockTypes as $typeinfo){
-            $types[$typeinfo['ID']] = $this->GetIblocks($typeinfo['ID']);
+            $iblocks = $this->GetIblocks($typeinfo['ID']);
+            //die();
+            if($iblocks != NULL){
+                $types[$typeinfo['ID']] = $iblocks;
+            }
+            //echo "<pre>"; var_dump($types); echo "</pre>";
         }
         return $types ? $types : 0;
     }
@@ -48,7 +53,7 @@ class Duplicates {
             'select' => ['ID', 'NAME', 'IBLOCK_TYPE_ID'],
             'filter' => ['ID'=> $id],
         ] )->FetchAll();
-        return $iblockOneType[0]['IBLOCK_TYPE_ID'] ? $iblockOneType[0]['IBLOCK_TYPE_ID'] : 0;
+        return $iblockOneType[0]['IBLOCK_TYPE_ID'] ? $iblockOneType[0]['IBLOCK_TYPE_ID'] : NULL;
     }
     /**
      * GetProps method, get all PROPS values

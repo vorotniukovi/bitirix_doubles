@@ -59,14 +59,26 @@ $oMenu = new CAdminContextMenu(array(
 ));
 ?>
 <br>
-<?if($odj_api->GetIblockType() != 0){?>
+<?if($odj_api->GetIblockType() != 0){
+    $ibl = $odj_api->GetIblockType();
+
+   
+
+
+    //die();
+    ?>
 <select id="idbl" name="idbl">
         <option value=""><?=GetMessage('VORLIS_DUBLES_CHENCH')?></option>   
-        <?$ibl = $odj_api->GetIblockType();?>
-<?foreach($ibl as $key=>$val){?>
+        <?$ibl = $odj_api->GetIblockType();
+         
+        ?>
+<?foreach($ibl as $key=>$val){
+
+    ?>
     <?foreach($ibl[$key] as $iblock=>$name ){?>
-        <option data-type="<?=$ibl[$val]?>" value="<?=$iblock?>"><?=$name?></option>
+        <option data-type="<?=$iblock?>" value="<?=$iblock?>"><?=$name?></option>
 <?}
+
     }?>
 </select>
 
