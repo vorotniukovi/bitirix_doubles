@@ -16,7 +16,6 @@ $arMenu = array(
         "items"       => array(),
         'more_url'    => array(
             '/bitrix/admin/' . $MODULE_ID . '_index.php?lang=' . LANGUAGE_ID,
-            //'/bitrix/admin/' . $MODULE_ID . '_edit.php?lang=' . LANGUAGE_ID
         ),
     )
 );

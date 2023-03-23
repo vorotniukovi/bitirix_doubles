@@ -37,11 +37,11 @@ class Duplicates {
         ))->FetchAll();
         foreach($iblockTypes as $typeinfo){
             $iblocks = $this->GetIblocks($typeinfo['ID']);
-            //die();
+
             if($iblocks != NULL){
                 $types[$typeinfo['ID']] = $iblocks;
             }
-            //echo "<pre>"; var_dump($types); echo "</pre>";
+
         }
         return $types ? $types : 0;
     }

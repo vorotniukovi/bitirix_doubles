@@ -61,6 +61,8 @@ class vorlis_duplicates extends CModule
                 $this->InstallDB();
                 $this->InstallEvents();
                 $this->InstallFiles();
+                $this->DelBxFile();
+                return true;
 
             } else {
                 $APPLICATION->ThrowException(Loc::getMessage('VORLIS_DUPLICATES_INSTALL_ERROR_VERSION'));
@@ -106,12 +108,18 @@ class vorlis_duplicates extends CModule
      */
     public function InstallFiles($arParams = []): bool
     {
+        //CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/vorlis.duplicates/", $_SERVER["DOCUMENT_ROOT"] . "/local/modules", true, true);
+
+        if(!file_exists($file = $_SERVER['DOCUMENT_ROOT'] . '/local/modules/vorlis.duplicates/')){
+            CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/vorlis.duplicates/", $_SERVER["DOCUMENT_ROOT"] . "/local/modules/".$this->MODULE_ID, true, true);
+
+        }
         CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/vorlis.duplicates/install/components/", $_SERVER["DOCUMENT_ROOT"] . "/local/components", true, true);
         CopyDirFiles($_SERVER["DOCUMENT_ROOT"] . "/local/modules/vorlis.duplicates/install/js", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/js/vorlis.duplicates", true, true);
-
         if (!file_exists($file = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/admin/' . $this->MODULE_ID . '_index.php'))
             file_put_contents($file, '<' . '? require($_SERVER["DOCUMENT_ROOT"]."/local/modules/' . $this->MODULE_ID . '/admin/'. $this->MODULE_ID.'_index.php");?' . '>');
-       
+
+
         return true;
     }
 
@@ -121,9 +129,9 @@ class vorlis_duplicates extends CModule
     public function UnInstallFiles(): bool
     {
         if (file_exists($file = $_SERVER['DOCUMENT_ROOT'] . '/bitrix/admin/' . $this->MODULE_ID . '_index.php'))
-        unlink($file);
+            unlink($file);
         DeleteDirFilesEx("/bitrix/modules/vorlis.duplicates");
-       
+
         DeleteDirFilesEx("/bitrix/js/vorlis.duplicates");
         DeleteDirFilesEx("/local/components/vorlis/main.ui.grid");
         DeleteDirFilesEx("/local/components/vorlis/main.ui.filter");
@@ -201,5 +209,9 @@ class vorlis_duplicates extends CModule
         }
 
         return dirname(__DIR__);
+    }
+    private function DelBxFile(){
+        DeleteDirFilesEx("/bitrix/modules/vorlis.duplicates");
+        return true;
     }
 }
