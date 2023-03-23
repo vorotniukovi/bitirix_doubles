@@ -86,7 +86,7 @@ $oMenu = new CAdminContextMenu(array(
     <option value=""><?=GetMessage('VORLIS_DUBLES_CHENCH2')?></option>
 </select>
 <div style="margin:15px 0;">
-    <input type="button" id="start_search" value="<?=GetMessage('VORLIS_DUBLES_SEARCH')?>" disabled class="adm-btn-save" style="height: 25px !important; padding-top: 0">
+    <input type="button" id="start_search" value="<?=GetMessage('VORLIS_DUBLES_SEARCH')?>" disabled class="adm-btn-save" style="height: 25px !important; padding-top: 0!important">
 </div>
 <?}else{
     die(GetMessage('VORLIS_DUBLES_NOIBLOKS'));
